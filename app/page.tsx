@@ -4,6 +4,7 @@ import type React from "react"
 
 import Image from "next/image"
 import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   Github,
   Linkedin,
@@ -20,8 +21,9 @@ import {
   Sun,
   Palette,
   Brain,
+  Menu,
+  X,
 } from "lucide-react"
-import { motion } from "framer-motion"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -33,6 +35,7 @@ export default function Portfolio() {
   const [mounted, setMounted] = useState(false)
   const [activeSection, setActiveSection] = useState("about")
   const observerRefs = useRef<IntersectionObserver[]>([])
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -250,13 +253,95 @@ export default function Portfolio() {
                 <span className="sr-only">Toggle theme</span>
               </Button>
             )}
-            <Button variant="outline" size="sm" className="md:hidden">
-              <Code className="h-4 w-4 mr-2" />
+            <Button variant="outline" size="sm" className="md:hidden" onClick={() => setMobileMenuOpen(true)}>
+              <Menu className="h-4 w-4 mr-2" />
               Menu
             </Button>
           </motion.div>
         </div>
       </motion.header>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="fixed right-0 top-0 h-full w-3/4 max-w-xs bg-card border-l border-border z-50 md:hidden overflow-y-auto"
+            >
+              <div className="p-4 flex justify-between items-center border-b border-border">
+                <div className="font-bold text-lg flex items-center gap-2">
+                  <Terminal className="h-4 w-4 text-primary" />
+                  <span>Navigation</span>
+                </div>
+                <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)}>
+                  <X className="h-5 w-5" />
+                  <span className="sr-only">Close menu</span>
+                </Button>
+              </div>
+              <nav className="p-4 space-y-4">
+                {["about", "skills", "certifications", "achievements", "contact"].map((section, index) => (
+                  <motion.a
+                    key={section}
+                    href={`#${section}`}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`block py-2 px-4 text-sm font-medium rounded-md transition-colors ${
+                      activeSection === section ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {section.charAt(0).toUpperCase() + section.slice(1)}
+                  </motion.a>
+                ))}
+              </nav>
+              <div className="p-4 border-t border-border">
+                <div className="flex justify-center space-x-4">
+                  <motion.a
+                    whileHover={{ scale: 1.1 }}
+                    href="https://github.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="GitHub"
+                    className="p-2 rounded-full hover:bg-muted"
+                  >
+                    <Github size={20} />
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ scale: 1.1 }}
+                    href="https://linkedin.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="LinkedIn"
+                    className="p-2 rounded-full hover:bg-muted"
+                  >
+                    <Linkedin size={20} />
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ scale: 1.1 }}
+                    href="mailto:alex@devops.example"
+                    aria-label="Email"
+                    className="p-2 rounded-full hover:bg-muted"
+                  >
+                    <Mail size={20} />
+                  </motion.a>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <main className="container py-8 md:py-12 relative z-1">
         {/* Hero Section */}

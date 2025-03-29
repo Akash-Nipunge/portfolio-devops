@@ -125,3 +125,16 @@ html {
   }
 }
 
+/* Add this to the end of the file to prevent scrolling when mobile menu is open */
+body.menu-open {
+  overflow: hidden;
+}
+
+/* Add this to improve touch interactions on mobile */
+@media (max-width: 768px) {
+  .mobile-nav-link {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+}
+
